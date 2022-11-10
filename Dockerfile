@@ -42,4 +42,5 @@ RUN mkdir cppAPI/build && \
 
 
 # sudo docker build -t crypto .
-# sudo docker run -p 443:443 -e PORT=443 -ti crypto:latest /cppAPI/build/cppAPI
+
+# sudo docker run -p $PORT:443 -e PORT=443 -ti crypto:latest /cppAPI/build/cppAPI
