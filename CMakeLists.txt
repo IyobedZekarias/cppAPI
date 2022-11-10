@@ -9,11 +9,12 @@ find_library(PTHREAD_LIBRARY pthread HINTS /usr/lib/x86_64-linux-gnu)
 find_library(SSL_LIBRARY ssl HINTS /usr/lib/x86_64-linux-gnu)
 find_library(CRYPTO_LIBRARY crypto /usr/lib/x86_64-linux-gnu)
 
-add_definitions(-DCROW_ENABLE_SSL)
+# add_definitions(-DCROW_ENABLE_SSL)
 
 add_executable(cppAPI main.cpp)
 
-target_link_libraries(cppAPI ${CRYPTO_LIBRARY} ${SSL_LIBRARY} ${PTHREAD_LIBRARY})
+# target_link_libraries(cppAPI ${CRYPTO_LIBRARY} ${SSL_LIBRARY} ${PTHREAD_LIBRARY})
+target_link_libraries(cppAPI ${PTHREAD_LIBRARY})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
