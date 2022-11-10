@@ -1,0 +1,6 @@
+[submodule "Crypto"]
+	path = Crypto
+	url = https://github.com/IyobedZekarias/Crypto.git
+[submodule "gmpwoop"]
+	path = gmpwoop
+	url = https://github.com/IyobedZekarias/gmpwoop.git
