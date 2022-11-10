@@ -1,9 +1,13 @@
-#include "crow.h"
+#include <crow.h>
+#include <crypto_iz.h>
 
 using namespace std;
 using namespace crow; 
+using namespace crypto;
 
 int main(int argc, char* argv[]) {
+    buffer_t a; 
+    urand(4, a);
     SimpleApp app; 
 
     CROW_ROUTE(app, "/")
