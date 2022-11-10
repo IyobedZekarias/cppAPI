@@ -31,7 +31,7 @@ RUN LD_LIBRARY_PATH=/usr/local/lib && export LD_LIBRARY_PATH
 RUN git clone --recurse-submodules -j8 https://github.com/IyobedZekarias/cppAPI.git
 
 # INSTALL CRYPTO_IZ
-RUN cd cppAPI/Crypto && make && make install
+RUN cd cppAPI/Crypto && make
 
 RUN mkdir cppAPI/build && \
     cd cppAPI/build && \
