@@ -24,8 +24,22 @@ RUN openssl genrsa -des3 -passout pass:x -out server.pass.key 2048 && \
     openssl req -new -key server.key -out server.csr \
         -subj "/C=US/ST=NY/L=NYC/O=Iyobed/OU=Iyobed Department/CN=iyobedz.com" && \
     openssl x509 -req -days 10000 -in server.csr -signkey server.key -out server.crt
+
+
+RUN git clone https://github.com/IyobedZekarias/cppAPI.git
+RUN mkdir cppAPI/build && \
+    cd cppAPI/build && \
+    cmake .. && make
+
+    
 # ADD ./usr/include /usr/local/include
 # VOLUME ./ $HOME/cppAPI/
 # RUN dpkg-deb -R $HOME/cppAPI/crow-v1.0+5.deb $HOME/cppAPI/
 # sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -p 443:443 -e PORT=443 -ti crypto:latest /usr/src/cppAPI/build/cppAPI
+
+
 # sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -ti crypto:latest bash
+
+
+# sudo docker build -t crypto .
+# sudo docker run -p 443:443 -e PORT=443 -ti crypto:latest /cppAPI/build/cppAPI
