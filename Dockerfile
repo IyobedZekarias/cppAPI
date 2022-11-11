@@ -31,9 +31,9 @@ RUN git clone --recurse-submodules -j8 https://github.com/IyobedZekarias/cppAPI.
 # INSTALL CRYPTO_IZ
 RUN cd cppAPI/Crypto && make && make install
 
-RUN mkdir cppAPI/build && \
-    cd cppAPI/build && \
-    cmake .. && make
+# RUN mkdir cppAPI/build && \
+#     cd cppAPI/build && \
+#     cmake .. && make
 
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
@@ -47,7 +47,10 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 
 # sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -ti crypto:latest bash
 
+# sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -ti crypto:latest /bin/bash -c "cd usr/src/cppAPI/build; make"
+
 
 # sudo docker build -t crypto .
+# sudo docker buildx build --platform=linux/amd64 -t crypto .
 
 # sudo docker run -p $PORT:443 -e PORT=443 -ti crypto:latest /cppAPI/build/cppAPI
