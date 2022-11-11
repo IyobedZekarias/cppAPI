@@ -25,24 +25,24 @@ RUN openssl genrsa -des3 -passout pass:x -out server.pass.key 2048 && \
         -subj "/C=US/ST=NY/L=NYC/O=Iyobed/OU=Iyobed Department/CN=iyobedz.com" && \
     openssl x509 -req -days 10000 -in server.csr -signkey server.key -out server.crt
 
-RUN LD_LIBRARY_PATH=/usr/local/lib && export LD_LIBRARY_PATH
-
 
 RUN git clone --recurse-submodules -j8 https://github.com/IyobedZekarias/cppAPI.git
 
 # INSTALL CRYPTO_IZ
-RUN cd cppAPI/Crypto && make
+RUN cd cppAPI/Crypto && make && make install
 
 RUN mkdir cppAPI/build && \
     cd cppAPI/build && \
     cmake .. && make
+
+ENV LD_LIBRARY_PATH=/usr/local/lib
 
 
     
 # ADD ./usr/include /usr/local/include
 # VOLUME ./ $HOME/cppAPI/
 # RUN dpkg-deb -R $HOME/cppAPI/crow-v1.0+5.deb $HOME/cppAPI/
-# sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -p 443:443 -e PORT=443 -ti crypto:latest /usr/src/cppAPI/build/cppAPI
+# sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -p 18080:443 -e PORT=443 -ti crypto:latest /usr/src/cppAPI/build/cppAPI
 
 
 # sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -ti crypto:latest bash
