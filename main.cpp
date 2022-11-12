@@ -93,6 +93,33 @@ int main(int argc, char* argv[]) {
                 return response(403, ret);
             }
         }
+        else if(func == "sha"){
+            string message = x["plain"].s();
+            buffer_t plain(message.begin(), message.end()), cipher;
+            int t = 0;
+
+            try
+            {
+                if (x["t"].i() > 512 || x["t"].i() < 100)
+                    return response(403, json::wvalue({{"Message", "hash level must be between 100 and 512"}}));
+            }
+            catch (const std::exception &e)
+            {
+                return response(403, json::wvalue({{"Message", "you must include t in body for hash level 100 to 512"}}));
+            }
+            try{
+                t = x["t"].i();
+            } catch(const std::exception &e){
+                return response(403, json::wvalue({{"Message", "t must be an integer from 100 to 512"}}));
+            }
+
+            hash_sha512(plain, cipher, t); 
+
+            json::wvalue ret = json::wvalue(x);
+            ret["hash"] = base64_encode(std::string(cipher.begin(), cipher.end()));
+
+            return response(ret);
+        }
         else {
             json::wvalue ret = {{"Message", "function parameter not set to proper option"}, {"Options", 
                                             {{"aes", 1},

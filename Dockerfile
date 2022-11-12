@@ -42,12 +42,12 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 # ADD ./usr/include /usr/local/include
 # VOLUME ./ $HOME/cppAPI/
 # RUN dpkg-deb -R $HOME/cppAPI/crow-v1.0+5.deb $HOME/cppAPI/
-# sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -p 18080:443 -e PORT=443 -ti crypto:latest /usr/src/cppAPI/build/cppAPI
+# sudo docker run -v ~/cppAPI:/usr/src/cppAPI -p 18080:443 -e PORT=443 -ti crypto:latest /usr/src/cppAPI/build/cppAPI
 
 
-# sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -ti crypto:latest bash
+# sudo docker run -v ~/cppAPI:/usr/src/cppAPI -ti crypto:latest bash
 
-# sudo docker run -v ~/CPPAPI:/usr/src/cppAPI -ti crypto:latest /bin/bash -c "cd usr/src/cppAPI/build; make"
+# sudo docker run -v ~/cppAPI:/usr/src/cppAPI -ti crypto:latest /bin/bash -c "cd usr/src/cppAPI/build; make"
 
 
 # sudo docker build -t crypto .
