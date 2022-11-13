@@ -7,6 +7,15 @@ using namespace std;
 using namespace crow; 
 using namespace crypto;
 
+string nniToString(NNI a)
+{
+    std::stringstream ss;
+    ss << a;
+    std::string myString = ss.str();
+    myString.erase(std::remove(myString.begin(), myString.end(), '\n'), myString.cend());
+    return myString; 
+}
+
 int main(int argc, char* argv[]) {
     buffer_t a; 
     urand(4, a);
@@ -119,6 +128,138 @@ int main(int argc, char* argv[]) {
             ret["hash"] = base64_encode(std::string(cipher.begin(), cipher.end()));
 
             return response(ret);
+        }
+        else if(func == "nni"){
+            if(x["op"].s() == "rand"){
+                NNI ans;
+                NNI::digit_t size;
+                json::wvalue ret;
+                try
+                {
+                    size = x["size"].i(); 
+                    ans.randnni(size); 
+                    ret["ans"] = nniToString(ans); 
+                }
+                catch (const std::exception &e)
+                {
+                    ret = {{"Message", "size parameter not set properly"}};
+                    return response(403, ret);
+                }
+                return response(200, ret);
+            }
+            else if(x["op"].s() == "add"){
+                json::wvalue ret;
+                try
+                {
+                    string as = x["a"].s(); 
+                    string bs = x["b"].s();
+                    NNI a(as.c_str()), b(bs.c_str()), ans; 
+                    ans = a + b; 
+                    ret["ans"] = nniToString(ans);
+                    return response(200, ret);
+                }
+                catch (const std::exception &e)
+                {
+                    ret = {{"Message", "a + b parameter not set properly"}};
+                    return response(403, ret);
+                }
+            }
+            else if (x["op"].s() == "sub")
+            {
+                json::wvalue ret;
+                try
+                {
+                    string as = x["a"].s();
+                    string bs = x["b"].s();
+                    NNI a(as.c_str()), b(bs.c_str()), ans;
+                    ans = a - b;
+                    ret["ans"] = nniToString(ans);
+                    return response(200, ret);
+                }
+                catch (const std::exception &e)
+                {
+                    ret = {{"Message", "a - b parameter not set properly"}};
+                    return response(403, ret);
+                }
+            }
+            else if (x["op"].s() == "mul")
+            {
+                json::wvalue ret;
+                try
+                {
+                    string as = x["a"].s();
+                    string bs = x["b"].s();
+                    NNI a(as.c_str()), b(bs.c_str()), ans;
+                    ans = a * b;
+                    ret["ans"] = nniToString(ans);
+                    return response(200, ret);
+                }
+                catch (const std::exception &e)
+                {
+                    ret = {{"Message", "a * b parameter not set properly"}};
+                    return response(403, ret);
+                }
+            }
+            else if (x["op"].s() == "div")
+            {
+                json::wvalue ret;
+                try
+                {
+                    string as = x["a"].s();
+                    string bs = x["b"].s();
+                    NNI a(as.c_str()), b(bs.c_str()), ans;
+                    ans = a / b;
+                    ret["ans"] = nniToString(ans);
+                    return response(200, ret);
+                }
+                catch (const std::exception &e)
+                {
+                    ret = {{"Message", "a / b parameter not set properly"}};
+                    return response(403, ret);
+                }
+            }
+            else if (x["op"].s() == "mod")
+            {
+                json::wvalue ret;
+                try
+                {
+                    string as = x["a"].s();
+                    string bs = x["b"].s();
+                    NNI a(as.c_str()), b(bs.c_str()), ans;
+                    ans = a % b;
+                    ret["ans"] = nniToString(ans);
+                    return response(200, ret);
+                }
+                catch (const std::exception &e)
+                {
+                    ret = {{"Message", "a % b parameter not set properly"}};
+                    return response(403, ret);
+                }
+            }
+            else if (x["op"].s() == "modexp")
+            {
+                json::wvalue ret;
+                try
+                {
+                    string as = x["a"].s();
+                    string bs = x["b"].s();
+                    string es = x["e"].s();
+                    NNI a(as.c_str()), b(bs.c_str()), e(es.c_str()), ans;
+                    ans = modexp(a, e, b);
+                    ret["ans"] = nniToString(ans);
+                    return response(200, ret);
+                }
+                catch (const std::exception &e)
+                {
+                    ret = {{"Message", "a^e % b parameter not set properly"}};
+                    return response(403, ret);
+                }
+            }
+            else{
+                json::wvalue ret = { {"Message", "NNI not formed correctly, op parameter options include"},
+                                     {"Options", {{"rand", 1}}} }; 
+                return response(403, ret);
+            }
         }
         else {
             json::wvalue ret = {{"Message", "function parameter not set to proper option"}, {"Options", 
