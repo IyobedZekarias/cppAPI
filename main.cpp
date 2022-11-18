@@ -261,6 +261,106 @@ int main(int argc, char* argv[]) {
                 return response(403, ret);
             }
         }
+        else if(func == "rsa"){
+            try
+            {            
+                if(x["op"].s() == "key"){
+                    RSAprivate priv; 
+                    RSApublic pub; 
+                    generate_rsa(&priv, &pub); 
+
+                    stringstream ss, ss2;
+                    ss << *priv.n;
+                    ss << *priv.p;
+                    ss << *priv.q;
+                    ss << *priv.d;
+                    ss << *priv.phi;
+
+                    ss2 << *pub.e; 
+                    ss2 << *pub.n;
+
+                    json::wvalue ret;
+                    ret["priv"] = base64_encode(ss.str());
+                    ret["pub"] = base64_encode(ss2.str());
+
+                    return response(200, ret);
+                }
+                else if(x["op"].s() == "encode"){
+                    buffer_t message, cipher; 
+                    try
+                    {
+                        string m = x["message"].s(), line;
+                        istringstream p(base64_decode(x["pub"].s()));
+                        message = buffer_t(m.begin(), m.end()); 
+                        RSApublic pub; 
+                        getline(p, line);
+                        NNI e(line.c_str());
+                        pub.e = &e;
+                        getline(p, line);
+                        NNI n(line.c_str());
+                        pub.n = &n;
+
+                        encode_rsa(message, cipher, pub); 
+                        json::wvalue ret;
+                        ret["cipher"] = base64_encode(string(cipher.begin(), cipher.end()));
+                        return response(200, ret); 
+                    }
+                    catch (const std::exception &e)
+                    {
+                        json::wvalue eret = {{"Message", "body not formed properly"}};
+                        return response(403, eret);
+                    }
+                }
+                else if(x["op"].s() == "decode"){
+                    buffer_t message, cipher;
+                    try
+                    {
+                        string c = base64_decode(x["cipher"].s()), line;
+                        istringstream p(base64_decode(x["priv"].s()));
+                        cipher = buffer_t(c.begin(), c.end());
+                        RSAprivate priv;
+
+                        getline(p, line);
+                        NNI n(line.c_str()); 
+                        priv.n = &n;
+                        getline(p, line);
+                        NNI p2(line.c_str());
+                        priv.p = &p2;
+                        getline(p, line);
+                        NNI q(line.c_str());
+                        priv.q = &q;
+                        getline(p, line);
+                        NNI d(line.c_str());
+                        priv.d = &d;
+                        getline(p, line);
+                        NNI phi(line.c_str());
+                        priv.phi = &phi;
+
+                        decode_rsa(message, cipher, priv);
+                        json::wvalue ret;
+                        ret["message"] = string(message.begin(), message.end());
+                        return response(200, ret);
+                    }
+                    catch (const std::exception &e)
+                    {
+                        json::wvalue eret = {{"Message", "body not formed properly"}};
+                        return response(403, eret);
+                    }
+                }
+                else {
+                    json::wvalue ret = {{"Message", "op key not correct"}, {"Options", "key, encode, decode"}};
+                    return response(403, ret); 
+                }
+            }
+            catch (const std::exception &e)
+            {
+                json::wvalue ret = {{"Message", "rsa operation needs to be in one of these forms"},
+                                    {"Option 1", {{"function", "rsa"}, {"op", "key"}}},
+                                    {"Option 2", {{"function", "rsa"}, {"op", "encode"}, {"message", "message to be encoded"}, {"pub", "publc key"}}},
+                                    {"Option 3", {{"function", "rsa"}, {"op", "decode"}, {"cipher", "encoded text"}, {"priv", "private key"}}}};
+                return response(200, ret);
+            }
+        }
         else {
             json::wvalue ret = {{"Message", "function parameter not set to proper option"}, {"Options", 
                                             {{"aes", 1},
