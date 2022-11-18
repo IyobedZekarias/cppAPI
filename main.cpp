@@ -1,6 +1,8 @@
+#define CROW_ENFORCE_WS_SPEC
 #include <crow.h>
 #include <crypto_iz.h>
 #include <crow/http_request.h>
+#include <crow/websocket.h>
 #include "base64.h"
 
 using namespace std;
@@ -19,11 +21,44 @@ string nniToString(NNI a)
 int main(int argc, char* argv[]) {
     buffer_t a; 
     urand(4, a);
-    SimpleApp app; 
+    SimpleApp app;
 
     CROW_ROUTE(app, "/")
     ([]()
      { return "<div><h1>Hello mom</h1></div>"; });
+
+    CROW_WEBSOCKET_ROUTE(app, "/rsakey")
+        .onopen([&](crow::websocket::connection &conn)
+                {
+    
+                    RSAprivate *privg = new RSAprivate;
+                    RSApublic *pubg = new RSApublic;
+                    generate_rsa(privg, pubg);
+                    cout << "done" << endl;
+
+                    stringstream ss, ss2;
+                    ss << *privg->d;
+                    ss << *privg->p;
+                    ss << *privg->q;
+                    ss << *privg->d;
+                    ss << *privg->phi;
+
+                    ss2 << *pubg->e; 
+                    ss2 << *pubg->n;
+
+
+                    json::wvalue ret;
+                    ret["priv"] = base64_encode(ss.str());
+                    ret["pub"] = base64_encode(ss2.str());
+                    conn.send_text(ret.dump()); })
+        .onclose([&](crow::websocket::connection &conn, const std::string &reason)
+                 { std::cout << "websocket closed" << endl; })
+        .onmessage([&](crow::websocket::connection &conn, const std::string &data, bool is_binary)
+                   {
+                if (is_binary)
+                    std::cout << "data" << endl;
+                else
+                    conn.send_text("hi back"); });
 
     CROW_ROUTE(app, "/crypto").methods(HTTPMethod::POST)([](const request &req){ 
         auto x = json::load(req.body);
@@ -264,28 +299,28 @@ int main(int argc, char* argv[]) {
         else if(func == "rsa"){
             try
             {            
-                if(x["op"].s() == "key"){
-                    RSAprivate priv; 
-                    RSApublic pub; 
-                    generate_rsa(&priv, &pub); 
+                // if(x["op"].s() == "key"){
+                //     RSAprivate priv; 
+                //     RSApublic pub;
+                //     generate_rsa(&priv, &pub);
 
-                    stringstream ss, ss2;
-                    ss << *priv.n;
-                    ss << *priv.p;
-                    ss << *priv.q;
-                    ss << *priv.d;
-                    ss << *priv.phi;
+                //     stringstream ss, ss2;
+                //     ss << *priv.n;
+                //     ss << *priv.p;
+                //     ss << *priv.q;
+                //     ss << *priv.d;
+                //     ss << *priv.phi;
 
-                    ss2 << *pub.e; 
-                    ss2 << *pub.n;
+                //     ss2 << *pub.e; 
+                //     ss2 << *pub.n;
 
-                    json::wvalue ret;
-                    ret["priv"] = base64_encode(ss.str());
-                    ret["pub"] = base64_encode(ss2.str());
+                //     json::wvalue ret;
+                //     ret["priv"] = base64_encode(ss.str());
+                //     ret["pub"] = base64_encode(ss2.str());
 
-                    return response(200, ret);
-                }
-                else if(x["op"].s() == "encode"){
+                //     return response(200, ret);
+                // }
+                if(x["op"].s() == "encode"){
                     buffer_t message, cipher; 
                     try
                     {
@@ -376,8 +411,8 @@ int main(int argc, char* argv[]) {
 
     char *port = getenv("PORT");
     uint16_t iPort = static_cast<uint16_t>(port != NULL? stoi(port): 18080); 
-    cout << "PORT = " << iPort << "\n";
-    cout << "hi" << endl;
+    std::cout << "PORT = " << iPort << "\n";
+    std::cout << "hi" << endl;
 
     app.port(iPort).multithreaded().run(); 
 
