@@ -337,7 +337,7 @@ int main(int argc, char* argv[]) {
                         priv.phi = &phi;
 
                         decode_rsa(message, cipher, priv);
-                        while(message.at(message.size() - 1) == NULL)
+                        while(message.at(message.size() - 1) == '\0')
                              message.pop_back(); 
                         json::wvalue ret;
                         ret["message"] = string(message.begin(), message.end());
