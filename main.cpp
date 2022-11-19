@@ -23,36 +23,51 @@ int main(int argc, char* argv[]) {
     urand(4, a);
     SimpleApp app;
 
+    request reqws; 
+    response resws;
+
+    reqws.url = "/socket.io/";
+
+    routing_params rpamws; 
+
     CROW_ROUTE(app, "/")
     ([]()
      { return "<div><h1>Hello mom</h1></div>"; });
 
-    CROW_WEBSOCKET_ROUTE(app, "/rsakey")
+    CROW_WEBSOCKET_ROUTE(app, "/socket.io/")
+        .onaccept([&](const crow::request &req, void **userdata)
+                  { 
+                    cout << req.url_params.get("EIO") << endl;
+                    return true; })
         .onopen([&](crow::websocket::connection &conn)
                 {
     
-                    RSAprivate *privg = new RSAprivate;
-                    RSApublic *pubg = new RSApublic;
-                    generate_rsa(privg, pubg);
-                    cout << "done" << endl;
+                    // RSAprivate *privg = new RSAprivate;
+                    // RSApublic *pubg = new RSApublic;
+                    // generate_rsa(privg, pubg);
+                    // cout << "done" << endl;
+ 
+                    // stringstream ss, ss2;
+                    // ss << *privg->d;
+                    // ss << *privg->p;
+                    // ss << *privg->q;
+                    // ss << *privg->d;
+                    // ss << *privg->phi;
 
-                    stringstream ss, ss2;
-                    ss << *privg->d;
-                    ss << *privg->p;
-                    ss << *privg->q;
-                    ss << *privg->d;
-                    ss << *privg->phi;
-
-                    ss2 << *pubg->e; 
-                    ss2 << *pubg->n;
+                    // ss2 << *pubg->e; 
+                    // ss2 << *pubg->n;
 
 
-                    json::wvalue ret;
-                    ret["priv"] = base64_encode(ss.str());
-                    ret["pub"] = base64_encode(ss2.str());
-                    conn.send_text(ret.dump()); })
+                    // json::wvalue ret;
+                    // ret["priv"] = base64_encode(ss.str());
+                    // ret["pub"] = base64_encode(ss2.str());
+                    // conn.send_text(ret.dump());
+                    cout << "sending" << endl;
+                    conn.send_ping("3"); })
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
-                 { std::cout << "websocket closed" << endl; })
+                 { 
+                    conn.send_text("hi");   
+                    std::cout << "websocket closed" << endl; })
         .onmessage([&](crow::websocket::connection &conn, const std::string &data, bool is_binary)
                    {
                 if (is_binary)
@@ -371,7 +386,7 @@ int main(int argc, char* argv[]) {
                         NNI phi(line.c_str());
                         priv.phi = &phi;
 
-                        decode_rsa(message, cipher, priv);
+                        crypto::decode_rsa(message, cipher, priv);
                         while(message.at(message.size() - 1) == '\0')
                              message.pop_back(); 
                         json::wvalue ret;
@@ -414,6 +429,5 @@ int main(int argc, char* argv[]) {
     std::cout << "PORT = " << iPort << "\n";
     std::cout << "hi" << endl;
 
-    app.port(iPort).multithreaded().run(); 
-
+    app.port(iPort).multithreaded().run();
 }
