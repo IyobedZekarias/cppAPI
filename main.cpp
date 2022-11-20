@@ -106,13 +106,15 @@ int main(int argc, char* argv[]) {
                     return true; })
         .onopen([&](crow::websocket::connection &conn)
                 {
-                    finish = false; 
-                    tp->fin = &finish;
-                    tp->connect = &conn;
-                    tp2->connect = &conn; 
-                    tp2->fin = &finish; 
-                    pthread_create(&ptid, NULL, &tppass, (void *)tp);
-                    pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2); 
+                    if(tp->fin == false){
+                        finish = false; 
+                        tp->fin = &finish;
+                        tp->connect = &conn;
+                        tp2->connect = &conn; 
+                        tp2->fin = &finish; 
+                        pthread_create(&ptid, NULL, &tppass, (void *)tp);
+                        pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2); 
+                    }
                 })
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
@@ -483,5 +485,5 @@ int main(int argc, char* argv[]) {
     std::cout << "hi" << endl;
     std::cout << thread::hardware_concurrency() << endl;
 
-    app.port(iPort).concurrency(thread::hardware_concurrency() - 2).run();
+    app.port(iPort).concurrency(thread::hardware_concurrency()).run();
 }
