@@ -27,12 +27,51 @@ typedef struct ThreadPass {
 
 } ThreadPass;
 
+typedef struct ThreadPair {
+
+    RSAprivate * privg; 
+    RSApublic * pubg;
+    websocket::connection *connect;
+    bool fin; 
+
+} ThreadPair; 
+
+void * rsakeys(void * keysarg){
+    pthread_detach(pthread_self());
+    ThreadPair * tp = (ThreadPair*)keysarg; 
+    tp->connect->send_text("generating keys"); 
+    tp -> privg = new RSAprivate; 
+    tp -> pubg = new RSApublic;
+    generate_rsa(tp->privg, tp->pubg);
+    tp -> fin = true;
+
+    tp->connect->send_text("done");
+
+    stringstream ss, ss2;
+    ss << *(tp->privg->n);
+    ss << *(tp->privg->p);
+    ss << *(tp->privg->q);
+    ss << *(tp->privg->d);
+    ss << *(tp->privg->phi);
+
+    ss2 << *(tp->pubg->e);
+    ss2 << *(tp->pubg->n);
+
+    json::wvalue ret;
+    ret["priv"] = base64_encode(ss.str());
+    ret["pub"] = base64_encode(ss2.str());
+    tp->connect->send_text(ret.dump());
+    tp->connect->close(); 
+
+    pthread_exit(NULL); 
+}
+
 void * tppass(void * tparg){
     ThreadPass * tp = (ThreadPass*)tparg;
     sleep(5);
     tp -> connect -> send_text("sending from thread");
     while(tp -> fin == false){
-        sleep(50);
+        sleep(3);
         tp->connect->send_ping("keep alive");
     }
     pthread_exit(NULL);
@@ -54,8 +93,9 @@ int main(int argc, char* argv[]) {
     ([]()
      { return "<div><h1>Hello mom</h1></div>"; });
 
-    pthread_t ptid;
+    pthread_t ptid, ptid2;
     ThreadPass *tp = new ThreadPass;
+    ThreadPair *tp2 = new ThreadPair;
 
     CROW_WEBSOCKET_ROUTE(app, "/rsakey")
         .onaccept([&](const crow::request &req, void **userdata)
@@ -64,39 +104,24 @@ int main(int argc, char* argv[]) {
                     return true; })
         .onopen([&](crow::websocket::connection &conn)
                 {
-    
-                    tp->fin = 0;
+                    tp->fin = false;
                     tp->connect = &conn;
+                    tp2->connect = &conn; 
+                    tp2->fin = &tp->fin; 
                     pthread_create(&ptid, NULL, &tppass, (void *)tp);
-
-                    conn.send_binary("ping1"); })
+                    pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2); 
+                })
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
                     tp -> fin = true; 
                     pthread_join(ptid, NULL); 
-                    pthread_cancel(ptid);   
-                    std::cout << "websocket closed" << endl; })
+                    pthread_cancel(ptid2);   
+                    std::cout << "websocket closed" << endl; 
+                })
         .onmessage([&](crow::websocket::connection &conn, const std::string &data, bool is_binary)
                    {
-                       RSAprivate *privg = new RSAprivate;
-                       RSApublic *pubg = new RSApublic;
-                       generate_rsa(privg, pubg);
-                       cout << "done" << endl;
-
-                       stringstream ss, ss2;
-                       ss << *privg->d;
-                       ss << *privg->p;
-                       ss << *privg->q;
-                       ss << *privg->d;
-                       ss << *privg->phi;
-
-                       ss2 << *pubg->e;
-                       ss2 << *pubg->n;
-
-                       json::wvalue ret;
-                       ret["priv"] = base64_encode(ss.str());
-                       ret["pub"] = base64_encode(ss2.str());
-                       conn.send_text(ret.dump());
+                       if(tp2->fin == false) conn.send_text("Not Done Generating keys"); 
+                       
                    });
 
     CROW_ROUTE(app, "/crypto").methods(HTTPMethod::POST)([](const request &req){ 
