@@ -97,7 +97,9 @@ int main(int argc, char* argv[]) {
     pthread_t ptid, ptid2;
     ThreadPass *tp = new ThreadPass;
     ThreadPair *tp2 = new ThreadPair;
-    bool finish = false; 
+    bool finish = false;
+    tp->fin = &finish;
+    tp2->fin = &finish;
 
     CROW_WEBSOCKET_ROUTE(app, "/rsakey")
         .onaccept([&](const crow::request &req, void **userdata)
@@ -107,11 +109,8 @@ int main(int argc, char* argv[]) {
         .onopen([&](crow::websocket::connection &conn)
                 {
                     if(*(tp->fin) == false){
-                        finish = false; 
-                        tp->fin = &finish;
                         tp->connect = &conn;
                         tp2->connect = &conn; 
-                        tp2->fin = &finish; 
                         pthread_create(&ptid, NULL, &tppass, (void *)tp);
                         pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2); 
                     }
