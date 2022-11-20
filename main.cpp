@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
                     return true; })
         .onopen([&](crow::websocket::connection &conn)
                 {
-                    if(tp->fin == false){
+                    if(*(tp->fin) == false){
                         finish = false; 
                         tp->fin = &finish;
                         tp->connect = &conn;
