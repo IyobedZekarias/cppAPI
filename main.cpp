@@ -61,7 +61,6 @@ void * rsakeys(void * keysarg){
     ret["priv"] = base64_encode(ss.str());
     ret["pub"] = base64_encode(ss2.str());
     tp->connect->send_text(ret.dump());
-    tp->connect->close(); 
 
     pthread_exit(NULL); 
 }
