@@ -4,6 +4,8 @@
 #include <crow/http_request.h>
 #include <crow/websocket.h>
 #include "base64.h"
+#include <pthread.h>
+#include <unistd.h>
 
 using namespace std;
 using namespace crow; 
@@ -16,6 +18,24 @@ string nniToString(NNI a)
     std::string myString = ss.str();
     myString.erase(std::remove(myString.begin(), myString.end(), '\n'), myString.cend());
     return myString; 
+}
+
+typedef struct ThreadPass {
+
+    bool fin; 
+    websocket::connection * connect; 
+
+} ThreadPass;
+
+void * tppass(void * tparg){
+    ThreadPass * tp = (ThreadPass*)tparg;
+    sleep(5);
+    tp -> connect -> send_text("sending from thread");
+    while(tp -> fin == false){
+        sleep(50);
+        tp->connect->send_ping("keep alive");
+    }
+    pthread_exit(NULL);
 }
 
 int main(int argc, char* argv[]) {
@@ -34,7 +54,10 @@ int main(int argc, char* argv[]) {
     ([]()
      { return "<div><h1>Hello mom</h1></div>"; });
 
-    CROW_WEBSOCKET_ROUTE(app, "/socket.io/")
+    pthread_t ptid;
+    ThreadPass *tp = new ThreadPass;
+
+    CROW_WEBSOCKET_ROUTE(app, "/rsakey")
         .onaccept([&](const crow::request &req, void **userdata)
                   { 
                     cout << req.url_params.get("EIO") << endl;
@@ -42,38 +65,39 @@ int main(int argc, char* argv[]) {
         .onopen([&](crow::websocket::connection &conn)
                 {
     
-                    // RSAprivate *privg = new RSAprivate;
-                    // RSApublic *pubg = new RSApublic;
-                    // generate_rsa(privg, pubg);
-                    // cout << "done" << endl;
- 
-                    // stringstream ss, ss2;
-                    // ss << *privg->d;
-                    // ss << *privg->p;
-                    // ss << *privg->q;
-                    // ss << *privg->d;
-                    // ss << *privg->phi;
+                    tp->fin = 0;
+                    tp->connect = &conn;
+                    pthread_create(&ptid, NULL, &tppass, (void *)tp);
 
-                    // ss2 << *pubg->e; 
-                    // ss2 << *pubg->n;
-
-
-                    // json::wvalue ret;
-                    // ret["priv"] = base64_encode(ss.str());
-                    // ret["pub"] = base64_encode(ss2.str());
-                    // conn.send_text(ret.dump());
-                    cout << "sending" << endl;
-                    conn.send_ping("3"); })
+                    conn.send_binary("ping1"); })
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
-                    conn.send_text("hi");   
+                    tp -> fin = true; 
+                    pthread_join(ptid, NULL); 
+                    pthread_cancel(ptid);   
                     std::cout << "websocket closed" << endl; })
         .onmessage([&](crow::websocket::connection &conn, const std::string &data, bool is_binary)
                    {
-                if (is_binary)
-                    std::cout << "data" << endl;
-                else
-                    conn.send_text("hi back"); });
+                       RSAprivate *privg = new RSAprivate;
+                       RSApublic *pubg = new RSApublic;
+                       generate_rsa(privg, pubg);
+                       cout << "done" << endl;
+
+                       stringstream ss, ss2;
+                       ss << *privg->d;
+                       ss << *privg->p;
+                       ss << *privg->q;
+                       ss << *privg->d;
+                       ss << *privg->phi;
+
+                       ss2 << *pubg->e;
+                       ss2 << *pubg->n;
+
+                       json::wvalue ret;
+                       ret["priv"] = base64_encode(ss.str());
+                       ret["pub"] = base64_encode(ss2.str());
+                       conn.send_text(ret.dump());
+                   });
 
     CROW_ROUTE(app, "/crypto").methods(HTTPMethod::POST)([](const request &req){ 
         auto x = json::load(req.body);
