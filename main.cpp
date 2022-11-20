@@ -481,6 +481,7 @@ int main(int argc, char* argv[]) {
     uint16_t iPort = static_cast<uint16_t>(port != NULL? stoi(port): 18080); 
     std::cout << "PORT = " << iPort << "\n";
     std::cout << "hi" << endl;
+    std::cout << thread::hardware_concurrency() << endl;
 
-    app.port(iPort).multithreaded().run();
+    app.port(iPort).concurrency(thread::hardware_concurrency() - 2).run();
 }
