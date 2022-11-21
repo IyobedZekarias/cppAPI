@@ -117,8 +117,7 @@ int main(int argc, char* argv[]) {
                 })
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
-                    *(tp -> fin) = true; 
-                    pthread_join(ptid, NULL); 
+                    pthread_cancel(ptid); 
                     pthread_cancel(ptid2);   
                     std::cout << "websocket closed" << endl; 
                 })
