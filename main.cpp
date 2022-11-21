@@ -69,10 +69,10 @@ void * rsakeys(void * keysarg){
 void * tppass(void * tparg){
     ThreadPass * tp = (ThreadPass*)tparg;
     sleep(20);
-    tp -> connect -> send_text("Starting Keep Alive");
+    tp -> connect -> send_text("starting Keep Alive");
     while(*(tp -> fin) == false){
-        sleep(3);
-        tp->connect->send_ping("keep alive");
+        sleep(53);
+        tp->connect->send_text("still alive");
     }
     tp -> connect -> send_text("ending keep alive"); 
     pthread_exit(NULL);
