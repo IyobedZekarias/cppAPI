@@ -124,7 +124,19 @@ int main(int argc, char* argv[]) {
         .onmessage([&](crow::websocket::connection &conn, const std::string &data, bool is_binary)
                    {
                        if(*(tp2->fin) == false) conn.send_text("Not Done Generating keys"); 
-                       else conn.send_text(tp2->ret.dump()); 
+                       else{
+                        if(data == "regen"){
+                            pthread_cancel(ptid);
+                            pthread_cancel(ptid2);
+                            finish = false; 
+                            tp->connect = &conn;
+                            tp2->connect = &conn;
+                            pthread_create(&ptid, NULL, &tppass, (void *)tp);
+                            pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2);
+                        }
+                        else conn.send_text(tp2->ret.dump());
+                       }
+                        
                        
                    });
 
