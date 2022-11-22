@@ -6,6 +6,7 @@
 #include "base64.h"
 #include <pthread.h>
 #include <unistd.h>
+#include <signal.h>
 
 using namespace std;
 using namespace crow; 
@@ -118,11 +119,11 @@ int main(int argc, char* argv[]) {
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
                     if(!finish){
-                        pthread_kill(ptid, 0); 
-                        pthread_kill(ptid2, 0); 
+                        pthread_kill(ptid, SIGTERM); 
+                        pthread_kill(ptid2, SIGTERM); 
                     } else {
-                        pthread_join(ptid, 0); 
-                        pthread_join(ptid2, 0); 
+                        pthread_join(ptid, NULL); 
+                        pthread_join(ptid2, NULL); 
                     }
                     tp = new ThreadPass;
                     tp2 = new ThreadPair;
