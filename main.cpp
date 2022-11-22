@@ -119,17 +119,19 @@ int main(int argc, char* argv[]) {
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
                     if(!finish){
-                        pthread_kill(ptid, SIGTERM); 
-                        pthread_kill(ptid2, SIGTERM); 
+                        // pthread_kill(ptid, SIGKILL); 
+                        // pthread_kill(ptid2, SIGKILL);
+                        pthread_cancel(ptid); 
+                        pthread_cancel(ptid2); 
                     } else {
                         pthread_join(ptid, NULL); 
                         pthread_join(ptid2, NULL); 
                     }
-                    // tp = new ThreadPass;
-                    // tp2 = new ThreadPair;
+                    tp = new ThreadPass;
+                    tp2 = new ThreadPair;
                     finish = false;
-                    // tp->fin = &finish;
-                    // tp2->fin = &finish;
+                    tp->fin = &finish;
+                    tp2->fin = &finish;
                     std::cout << "websocket closed" << endl; 
                 })
         .onmessage([&](crow::websocket::connection &conn, const std::string &data, bool is_binary)
