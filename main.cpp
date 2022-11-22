@@ -117,9 +117,18 @@ int main(int argc, char* argv[]) {
                 })
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
-                    
-                    pthread_join(ptid, 0); 
-                    pthread_join(ptid2, 0); 
+                    if(!finish){
+                        pthread_kill(ptid, 0); 
+                        pthread_kill(ptid2, 0); 
+                    } else {
+                        pthread_join(ptid, 0); 
+                        pthread_join(ptid2, 0); 
+                    }
+                    tp = new ThreadPass;
+                    tp2 = new ThreadPair;
+                    finish = false;
+                    tp->fin = &finish;
+                    tp2->fin = &finish;
                     std::cout << "websocket closed" << endl; 
                 })
         .onmessage([&](crow::websocket::connection &conn, const std::string &data, bool is_binary)
