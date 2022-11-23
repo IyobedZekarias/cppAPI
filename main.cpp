@@ -25,7 +25,6 @@ typedef struct ThreadPass {
 
     bool * fin; 
     websocket::connection * connect; 
-    bool * started; 
 
 } ThreadPass;
 
@@ -36,14 +35,12 @@ typedef struct ThreadPair {
     websocket::connection *connect;
     json::wvalue ret; 
     bool * fin; 
-    bool * started;
 
 } ThreadPair; 
 
 void * rsakeys(void * keysarg){
     pthread_detach(pthread_self());
     ThreadPair * tp = (ThreadPair*)keysarg; 
-    *(tp -> started) = true; 
     tp->connect->send_text("generating keys"); 
     tp -> privg = new RSAprivate; 
     tp -> pubg = new RSApublic;
@@ -66,14 +63,12 @@ void * rsakeys(void * keysarg){
     tp->connect->send_text(tp->ret.dump());
 
     *(tp->fin) = true;
-    *(tp->started) = false;
 
     pthread_exit(NULL); 
 }
 
 void * tppass(void * tparg){
     ThreadPass * tp = (ThreadPass*)tparg;
-    *(tp-> started) = true; 
     sleep(20);
     tp -> connect -> send_text("starting Keep Alive");
     while(*(tp -> fin) == false){
@@ -81,7 +76,6 @@ void * tppass(void * tparg){
         tp->connect->send_text("still alive");
     }
     tp -> connect -> send_text("ending keep alive"); 
-    *(tp->started) = false; 
     pthread_exit(NULL);
 }
 
@@ -105,11 +99,8 @@ int main(int argc, char* argv[]) {
     ThreadPass *tp = new ThreadPass;
     ThreadPair *tp2 = new ThreadPair;
     bool finish = false;
-    bool started = false;
     tp->fin = &finish;
     tp2->fin = &finish;
-    tp->started = &started; 
-    tp2->started = &started;
 
     CROW_WEBSOCKET_ROUTE(app, "/rsakey")
         .onaccept([&](const crow::request &req, void **userdata)
@@ -119,25 +110,11 @@ int main(int argc, char* argv[]) {
         .onopen([&](crow::websocket::connection &conn)
                 {
                     if(*(tp->fin) == false){
-                        if(*(tp->started) == true){
-                            pthread_cancel(ptid); 
-                            pthread_cancel(ptid2);
-                            // tp = NULL;
-                            // tp2 = NULL;
-                            // delete tp;
-                            // delete tp2;
-                            tp = new ThreadPass;
-                            tp2 = new ThreadPair;
-                            started = false;
-                            tp->started = &started;
-                            tp->started = &started;
-                        }
                         tp->connect = &conn;
                         tp2->connect = &conn; 
                         pthread_create(&ptid, NULL, &tppass, (void *)tp);
                         pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2); 
                     }
-                    
                 })
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
@@ -151,17 +128,14 @@ int main(int argc, char* argv[]) {
                         pthread_join(ptid2, NULL); 
                     }
                     tp = NULL; 
-                    tp2 = NULL; 
+                    tp2 = NULL;
                     delete tp; 
                     delete tp2; 
                     tp = new ThreadPass;
                     tp2 = new ThreadPair;
                     finish = false;
-                    started = false; 
                     tp->fin = &finish;
                     tp2->fin = &finish;
-                    tp->started = &started; 
-                    tp->started = &started; 
                     std::cout << "websocket closed" << endl; 
                 })
         .onmessage([&](crow::websocket::connection &conn, const std::string &data, bool is_binary)
