@@ -127,8 +127,6 @@ int main(int argc, char* argv[]) {
                         pthread_join(ptid, NULL); 
                         pthread_join(ptid2, NULL); 
                     }
-                    tp = new ThreadPass;
-                    tp2 = new ThreadPair;
                     finish = false;
                     tp->fin = &finish;
                     tp2->fin = &finish;
@@ -484,10 +482,9 @@ int main(int argc, char* argv[]) {
             }
             catch (const std::exception &e)
             {
-                json::wvalue ret = {{"Message", "rsa operation needs to be in one of these forms"},
-                                    {"Option 1", {{"function", "rsa"}, {"op", "key"}}},
-                                    {"Option 2", {{"function", "rsa"}, {"op", "encode"}, {"message", "message to be encoded"}, {"pub", "publc key"}}},
-                                    {"Option 3", {{"function", "rsa"}, {"op", "decode"}, {"cipher", "encoded text"}, {"priv", "private key"}}}};
+                json::wvalue ret = {{"Message", "rsa operation needs to be in one of these forms, to make keys open websocket with wss://"},
+                                    {"Option 1", {{"function", "rsa"}, {"op", "encode"}, {"message", "message to be encoded"}, {"pub", "publc key"}}},
+                                    {"Option 2", {{"function", "rsa"}, {"op", "decode"}, {"cipher", "encoded text"}, {"priv", "private key"}}}};
                 return response(200, ret);
             }
         }
