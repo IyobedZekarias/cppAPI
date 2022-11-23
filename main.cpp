@@ -120,20 +120,17 @@ int main(int argc, char* argv[]) {
                 {
                     if(*(tp->fin) == false){
                         if(*(tp->started) == true){
-                            pthread_cancel(ptid); 
-                            pthread_cancel(ptid2);
-                            tp = NULL;
-                            tp2 = NULL;
-                            delete tp;
-                            delete tp2;
-                            tp = new ThreadPass;
-                            tp2 = new ThreadPair;
-                            finish = false;
-                            started = false;
-                            tp->fin = &finish;
-                            tp2->fin = &finish;
-                            tp->started = &started;
-                            tp->started = &started;
+                            pthread_kill(ptid, SIGTERM); 
+                            pthread_kill(ptid2, SIGTERM);
+                            // tp = NULL;
+                            // tp2 = NULL;
+                            // delete tp;
+                            // delete tp2;
+                            // tp = new ThreadPass;
+                            // tp2 = new ThreadPair;
+                            // started = false;
+                            // tp->started = &started;
+                            // tp->started = &started;
                         }
                         tp->connect = &conn;
                         tp2->connect = &conn; 
