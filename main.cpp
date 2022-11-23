@@ -122,6 +122,10 @@ int main(int argc, char* argv[]) {
                         if(*(tp->started) == true){
                             pthread_cancel(ptid); 
                             pthread_cancel(ptid2);
+                            tp = NULL;
+                            tp2 = NULL;
+                            delete tp;
+                            delete tp2;
                             tp = new ThreadPass;
                             tp2 = new ThreadPair;
                             finish = false;
