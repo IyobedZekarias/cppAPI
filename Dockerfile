@@ -18,12 +18,12 @@ RUN mkdir Crow/build
 RUN cd Crow/build && cmake .. -DCROW_BUILD_EXAMPLES=OFF -DCROW_BUILD_TESTS=OFF -DCROW_FEATURES="ssl;compression"
 RUN cd Crow/build && make install
 
-RUN openssl genrsa -des3 -passout pass:x -out server.pass.key 2048 && \
-    openssl rsa -passin pass:x -in server.pass.key -out server.key && \
-    rm server.pass.key && \
-    openssl req -new -key server.key -out server.csr \
-        -subj "/C=US/ST=NY/L=NYC/O=Iyobed/OU=Iyobed Department/CN=iyobedz.com" && \
-    openssl x509 -req -days 10000 -in server.csr -signkey server.key -out server.crt
+# RUN openssl genrsa -des3 -passout pass:x -out server.pass.key 2048 && \
+#     openssl rsa -passin pass:x -in server.pass.key -out server.key && \
+#     rm server.pass.key && \
+#     openssl req -new -key server.key -out server.csr \
+#         -subj "/C=US/ST=NY/L=NYC/O=Iyobed/OU=Iyobed Department/CN=iyobedz.com" && \
+#     openssl x509 -req -days 10000 -in server.csr -signkey server.key -out server.crt
 
 
 RUN git clone --recurse-submodules -j8 https://github.com/IyobedZekarias/cppAPI.git

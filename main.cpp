@@ -120,8 +120,8 @@ int main(int argc, char* argv[]) {
                 {
                     if(*(tp->fin) == false){
                         if(*(tp->started) == true){
-                            pthread_kill(ptid, SIGTERM); 
-                            pthread_kill(ptid2, SIGTERM);
+                            pthread_cancel(ptid); 
+                            pthread_cancel(ptid2);
                             // tp = NULL;
                             // tp2 = NULL;
                             // delete tp;
