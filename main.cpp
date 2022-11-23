@@ -119,19 +119,6 @@ int main(int argc, char* argv[]) {
         .onopen([&](crow::websocket::connection &conn)
                 {
                     if(*(tp->fin) == false){
-                        if(*(tp->started) == true){
-                            pthread_cancel(ptid); 
-                            pthread_cancel(ptid2);
-                            // tp = NULL;
-                            // tp2 = NULL;
-                            // delete tp;
-                            // delete tp2;
-                            // tp = new ThreadPass;
-                            // tp2 = new ThreadPair;
-                            // started = false;
-                            // tp->started = &started;
-                            // tp->started = &started;
-                        }
                         tp->connect = &conn;
                         tp2->connect = &conn; 
                         pthread_create(&ptid, NULL, &tppass, (void *)tp);
