@@ -109,12 +109,13 @@ int main(int argc, char* argv[]) {
                     return true; })
         .onopen([&](crow::websocket::connection &conn)
                 {
-                    if(*(tp->fin) == false){
+                    if(finish == false){
                         tp->connect = &conn;
                         tp2->connect = &conn; 
                         pthread_create(&ptid, NULL, &tppass, (void *)tp);
                         pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2); 
                     }
+                    else conn.send_text(tp2->ret.dump()); 
                 })
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
@@ -133,9 +134,9 @@ int main(int argc, char* argv[]) {
                     // delete tp2; 
                     // tp = new ThreadPass;
                     // tp2 = new ThreadPair;
-                    finish = false;
-                    tp->fin = &finish;
-                    tp2->fin = &finish;
+                    // finish = false;
+                    // tp->fin = &finish;
+                    // tp2->fin = &finish;
                     std::cout << "websocket closed" << endl; 
                 })
         .onmessage([&](crow::websocket::connection &conn, const std::string &data, bool is_binary)
@@ -143,11 +144,14 @@ int main(int argc, char* argv[]) {
                        if(*(tp2->fin) == false) conn.send_text("Not Done Generating keys"); 
                        else{
                         if(data == "regen"){
-                            pthread_cancel(ptid);
-                            pthread_cancel(ptid2);
+                            pthread_join(ptid, NULL);
+                            pthread_join(ptid2, NULL);
+                            // pthread_cancel(ptid);
+                            // pthread_cancel(ptid2);
                             finish = false; 
-                            tp->connect = &conn;
-                            tp2->connect = &conn;
+                            // tp->connect = &conn;
+                            // tp2->connect = &conn;
+                            conn.send_text("Regenerating");
                             pthread_create(&ptid, NULL, &tppass, (void *)tp);
                             pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2);
                         }
