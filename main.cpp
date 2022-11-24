@@ -143,18 +143,8 @@ int main(int argc, char* argv[]) {
                        if(*(tp2->fin) == false) conn.send_text("Not Done Generating keys"); 
                        else{
                         if(data == "regen"){
-                            if (!finish)
-                            {
-                                // pthread_kill(ptid, SIGKILL);
-                                // pthread_kill(ptid2, SIGKILL);
-                                pthread_cancel(ptid);
-                                pthread_cancel(ptid2);
-                            }
-                            else
-                            {
-                                pthread_join(ptid, NULL);
-                                pthread_join(ptid2, NULL);
-                            }
+                            pthread_cancel(ptid);
+                            pthread_cancel(ptid2);
                             finish = false; 
                             tp->connect = &conn;
                             tp2->connect = &conn;
