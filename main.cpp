@@ -127,12 +127,12 @@ int main(int argc, char* argv[]) {
                         pthread_join(ptid, NULL); 
                         pthread_join(ptid2, NULL); 
                     }
-                    tp = NULL; 
-                    tp2 = NULL;
-                    delete tp; 
-                    delete tp2; 
-                    tp = new ThreadPass;
-                    tp2 = new ThreadPair;
+                    // tp = NULL; 
+                    // tp2 = NULL;
+                    // delete tp; 
+                    // delete tp2; 
+                    // tp = new ThreadPass;
+                    // tp2 = new ThreadPair;
                     finish = false;
                     tp->fin = &finish;
                     tp2->fin = &finish;
