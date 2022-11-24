@@ -129,10 +129,10 @@ int main(int argc, char* argv[]) {
                     }
                     // tp = NULL; 
                     // tp2 = NULL;
-                    delete tp; 
-                    delete tp2; 
-                    tp = new ThreadPass;
-                    tp2 = new ThreadPair;
+                    // delete tp; 
+                    // delete tp2; 
+                    // tp = new ThreadPass;
+                    // tp2 = new ThreadPair;
                     finish = false;
                     tp->fin = &finish;
                     tp2->fin = &finish;
@@ -155,13 +155,7 @@ int main(int argc, char* argv[]) {
                                 pthread_join(ptid, NULL);
                                 pthread_join(ptid2, NULL);
                             }
-                            delete tp;
-                            delete tp2;
-                            tp = new ThreadPass;
-                            tp2 = new ThreadPair;
-                            finish = false;
-                            tp->fin = &finish;
-                            tp2->fin = &finish;
+                            finish = false; 
                             tp->connect = &conn;
                             tp2->connect = &conn;
                             pthread_create(&ptid, NULL, &tppass, (void *)tp);
