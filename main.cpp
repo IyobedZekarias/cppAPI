@@ -145,22 +145,36 @@ int main(int argc, char* argv[]) {
                        else{
                         if(data == "regen"){
                             
-                            // if (!finish)
-                            // {
-                            //     // pthread_kill(ptid, SIGKILL);
-                            //     // pthread_kill(ptid2, SIGKILL);
-                            //     pthread_cancel(ptid);
-                            //     pthread_cancel(ptid2);
-                            // }
-                            // else
-                            // {
-                            //     pthread_join(ptid, NULL);
-                            //     pthread_join(ptid2, NULL);
-                            // }
-                            // finish = false;
-                            // pthread_create(&ptid, NULL, &tppass, (void *)tp);
-                            // pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2);
-                            conn.send_text(tp2->ret.dump());
+                            conn.send_text("regenerating"); 
+                            pthread_join(ptid, NULL);
+                            pthread_join(ptid2, NULL);
+                            tp->connect = NULL; 
+                            tp->fin = NULL; 
+                            delete tp; 
+                            free(tp2->privg->d); 
+                            free(tp2->privg->n); 
+                            free(tp2->privg->p); 
+                            free(tp2->privg->phi); 
+                            free(tp2->privg->q); 
+                            free(tp2->pubg->e); 
+                            free(tp2->pubg->n); 
+                            tp2->connect = NULL; 
+                            tp2->fin = NULL; 
+                            delete tp2->pubg; 
+                            delete tp2->privg; 
+                            delete tp2;
+
+                            tp = new ThreadPass;
+                            tp2 = new ThreadPair; 
+                            finish = false;
+
+                            tp->fin = &finish;
+                            tp2->fin = &finish;
+                            tp->connect = &conn;
+                            tp2->connect = &conn;
+                            pthread_create(&ptid, NULL, &tppass, (void *)tp);
+                            pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2);
+                            // conn.send_text(tp2->ret.dump());
                         }
                         else conn.send_text(tp2->ret.dump());
                        }
