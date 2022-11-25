@@ -123,10 +123,27 @@ int main(int argc, char* argv[]) {
                         // pthread_kill(ptid, SIGKILL); 
                         // pthread_kill(ptid2, SIGKILL);
                         pthread_cancel(ptid); 
-                        pthread_cancel(ptid2); 
+                        pthread_cancel(ptid2);
+                        tp->connect = NULL;
+                        tp->fin = NULL;
+                        delete tp;
+                        tp2->connect = NULL;
+                        tp2->fin = NULL;
+                        delete tp2->pubg;
+                        delete tp2->privg;
+                        delete tp2;
+
+                        tp = new ThreadPass;
+                        tp2 = new ThreadPair;
+                        finish = false;
+
+                        tp->fin = &finish;
+                        tp2->fin = &finish;
+                        tp->connect = &conn;
+                        tp2->connect = &conn;
                     } else {
                         pthread_join(ptid, NULL); 
-                        pthread_join(ptid2, NULL); 
+                        pthread_join(ptid2, NULL);
                     }
                     // tp = NULL; 
                     // tp2 = NULL;
