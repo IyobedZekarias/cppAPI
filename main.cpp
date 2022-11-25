@@ -145,21 +145,22 @@ int main(int argc, char* argv[]) {
                        else{
                         if(data == "regen"){
                             
-                            if (!finish)
-                            {
-                                // pthread_kill(ptid, SIGKILL);
-                                // pthread_kill(ptid2, SIGKILL);
-                                pthread_cancel(ptid);
-                                pthread_cancel(ptid2);
-                            }
-                            else
-                            {
-                                pthread_join(ptid, NULL);
-                                pthread_join(ptid2, NULL);
-                            }
-                            finish = false;
-                            pthread_create(&ptid, NULL, &tppass, (void *)tp);
-                            pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2);
+                            // if (!finish)
+                            // {
+                            //     // pthread_kill(ptid, SIGKILL);
+                            //     // pthread_kill(ptid2, SIGKILL);
+                            //     pthread_cancel(ptid);
+                            //     pthread_cancel(ptid2);
+                            // }
+                            // else
+                            // {
+                            //     pthread_join(ptid, NULL);
+                            //     pthread_join(ptid2, NULL);
+                            // }
+                            // finish = false;
+                            // pthread_create(&ptid, NULL, &tppass, (void *)tp);
+                            // pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2);
+                            conn.send_text(tp2->ret.dump());
                         }
                         else conn.send_text(tp2->ret.dump());
                        }
