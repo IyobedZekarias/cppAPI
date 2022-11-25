@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
                         pthread_create(&ptid, NULL, &tppass, (void *)tp);
                         pthread_create(&ptid2, NULL, &rsakeys, (void *)tp2); 
                     }
-                    else conn.send_text(tp2->ret.dump()); 
+                    // else conn.send_text(tp2->ret.dump()); 
                 })
         .onclose([&](crow::websocket::connection &conn, const std::string &reason)
                  { 
