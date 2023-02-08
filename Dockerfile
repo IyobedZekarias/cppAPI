@@ -32,7 +32,7 @@ RUN git clone --recurse-submodules -j8 https://github.com/IyobedZekarias/cppAPI.
 RUN cd cppAPI/Crypto && make && make install
 
 # INSTALL GMPWOOP
-RUN cd cppAPI/gmpwoop && ./configure --enable-woop && make && make install
+RUN cd cppAPI/gmpwoop && ./configure --enable-woop && make && make install && cp gmp-impl.h /usr/local/include
 
 RUN mkdir cppAPI/build && \
     cd cppAPI/build && \

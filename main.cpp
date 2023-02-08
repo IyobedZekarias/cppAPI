@@ -98,8 +98,8 @@ int main(int argc, char* argv[]) {
     // mpz_set_str(a, "283479283784984758749387682739719875849872384798725", 10);
     mpz_initwb_set_str(0, ampz, "283479283784984758749387682739719875849872384798725", 10);
 
-    // cout << WOOPB(ampz) << endl;
-    // cout << WOOP(ampz) << endl;
+    cout << WOOPB(ampz) << endl;
+    cout << WOOP(ampz) << endl;
 
     CROW_ROUTE(app, "/")
     ([]()
