@@ -7,6 +7,8 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <signal.h>
+#include "gmp.h"
+#include "gmpwoop/gmp-impl.h"
 
 using namespace std;
 using namespace crow; 
@@ -89,7 +91,15 @@ int main(int argc, char* argv[]) {
 
     reqws.url = "/socket.io/";
 
-    routing_params rpamws; 
+    routing_params rpamws;
+
+    mpz_t ampz;
+    // mpz_init(a);
+    // mpz_set_str(a, "283479283784984758749387682739719875849872384798725", 10);
+    mpz_initwb_set_str(0, ampz, "283479283784984758749387682739719875849872384798725", 10);
+
+    cout << WOOPB(ampz) << endl;
+    cout << WOOP(ampz) << endl;
 
     CROW_ROUTE(app, "/")
     ([]()
