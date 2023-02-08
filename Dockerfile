@@ -55,7 +55,7 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 # sudo docker run -v ~/cppAPI:/usr/src/cppAPI -ti crypto:latest /bin/bash -c "cd usr/src/cppAPI/build; make"
 
 
-# sudo docker build -t crypto .
+# sudo docker build --no-cache -t crypto .
 # sudo docker buildx build --platform=linux/amd64 -t crypto .
 
 # sudo docker run -p $PORT:443 -e PORT=443 -ti crypto:latest /cppAPI/build/cppAPI
