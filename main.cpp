@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include "gmp.h"
-#include "gmpwoop/gmp-impl.h"
+#include "gmp-impl.h"
 
 using namespace std;
 using namespace crow; 
