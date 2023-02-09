@@ -6,17 +6,18 @@ RUN apt-get -qq install cmake
 
 RUN dpkg --configure -a
 # RUN apt-get -qq install libboost-all-dev
-RUN apt-get -qq install -y libasio-dev
-RUN apt-get -qq install -y zlib1g
-RUN apt-get -qq install -y libssl-dev
-RUN apt-get install build-essential libtcmalloc-minimal4 && \
-    ln -s /usr/lib/libtcmalloc_minimal.so.4 /usr/lib/libtcmalloc_minimal.so
-
-RUN git clone https://github.com/CrowCpp/Crow.git
-RUN cd Crow
-RUN mkdir Crow/build
-RUN cd Crow/build && cmake .. -DCROW_BUILD_EXAMPLES=OFF -DCROW_BUILD_TESTS=OFF -DCROW_FEATURES="ssl;compression"
-RUN cd Crow/build && make install
+RUN apt-get -qq install -y libasio-dev && \ 
+    apt-get -qq install -y zlib1g && \
+    apt-get -qq install -y libssl-dev && \ 
+    apt-get install build-essential libtcmalloc-minimal4 && \
+    ln -s /usr/lib/libtcmalloc_minimal.so.4 /usr/lib/libtcmalloc_minimal.so && \ 
+    cd / && \ 
+    git clone https://github.com/CrowCpp/Crow.git && \
+    cd Crow && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCROW_BUILD_EXAMPLES=OFF -DCROW_BUILD_TESTS=OFF -DCROW_FEATURES="ssl;compression" && \
+    make install
 
 # RUN openssl genrsa -des3 -passout pass:x -out server.pass.key 2048 && \
 #     openssl rsa -passin pass:x -in server.pass.key -out server.key && \
@@ -26,13 +27,16 @@ RUN cd Crow/build && make install
 #     openssl x509 -req -days 10000 -in server.csr -signkey server.key -out server.crt
 
 
-RUN git clone --recurse-submodules -j8 https://github.com/IyobedZekarias/cppAPI.git
+RUN git clone https://github.com/IyobedZekarias/cppAPI.git && \
+    git clone https://github.com/IyobedZekarias/gmpwoop.git && \ 
+    git clone https://github.com/IyobedZekarias/Crypto.git && \
+    cd Crypto && make && make install && \
+    cd gmpwoop && ./configure --enable-woop && make && make install
 
 # INSTALL CRYPTO_IZ
-RUN cd cppAPI/Crypto && make && make install
+
 
 # INSTALL GMPWOOP
-RUN cd cppAPI/gmpwoop && ./configure --enable-woop && make && make install
 
 RUN mkdir cppAPI/build && \
     cd cppAPI/build && \
@@ -52,7 +56,7 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 
 # sudo docker run -v ~/cppAPI:/usr/src/cppAPI -ti crypto:latest bash
 
-# sudo docker run -v ~/cppAPI:/usr/src/cppAPI -ti crypto:latest /bin/bash -c "cd usr/src/cppAPI/build; make"
+# sudo docker run -v ~/cppAPI:/usr/src/cppAPI -p $PORT:443 -e PORT=443 -ti crypto:latest /bin/bash -c "cd usr/src/cppAPI/build; make; ./cppAPI"
 
 
 # sudo docker build --no-cache -t crypto .

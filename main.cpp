@@ -1,4 +1,5 @@
 #define CROW_ENFORCE_WS_SPEC
+#include "gmp.h"
 #include <crow.h>
 #include <crypto_iz.h>
 #include <crow/http_request.h>
@@ -7,8 +8,6 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <signal.h>
-#include "gmp.h"
-#include "gmpwoop/gmp-impl.h"
 
 using namespace std;
 using namespace crow; 
@@ -555,7 +554,11 @@ int main(int argc, char* argv[]) {
     std::cout << "PORT = " << iPort << "\n";
     std::cout << "hi" << endl;
 #if WOOPING
-    cout << "we are wooping" << endl;
+    mpz_t ampz; 
+    mp_limb_t wb = mpz_initwb(0, ampz); 
+    mp_limb_t wv = mpz_get_wv(ampz); 
+    mpz_check_woop(ampz);
+    cout << wv << endl;
 #endif
     std::cout << thread::hardware_concurrency() << endl;
 

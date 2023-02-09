@@ -14,10 +14,11 @@ find_library(CRYPTOIZ_LIBRARY crypto_iz HINTS usr/local/lib)
 
 # add_definitions(-DCROW_ENABLE_SSL)
 
-add_executable(cppAPI main.cpp base64.cpp)
+# add_executable(cppAPI main.cpp base64.cpp)
+add_executable(cppAPI tester.cpp)
 
 # target_link_libraries(cppAPI ${CRYPTO_LIBRARY} ${SSL_LIBRARY} ${PTHREAD_LIBRARY})
-target_link_libraries(cppAPI ${PTHREAD_LIBRARY} ${CRYPTOIZ_LIBRARY} ${GMPWOOP_LIBRARY})
+target_link_libraries(cppAPI ${GMPWOOP_LIBRARY} ${PTHREAD_LIBRARY} ${CRYPTOIZ_LIBRARY})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
