@@ -8,9 +8,9 @@ include_directories(/usr/local/include)
 include_directories(CMAKE_CURRENT_SOURCE_DIR)
 find_library(PTHREAD_LIBRARY pthread HINTS /usr/lib/x86_64-linux-gnu)
 
-find_library(GMPWOOP_LIBRARY gmp /usr/local/lib)
+find_library(GMPWOOP_LIBRARY gmp HINTS /usr/local/lib)
 
-find_library(CRYPTOIZ_LIBRARY crypto_iz HITNS usr/local/lib)
+find_library(CRYPTOIZ_LIBRARY crypto_iz HINTS usr/local/lib)
 
 # add_definitions(-DCROW_ENABLE_SSL)
 

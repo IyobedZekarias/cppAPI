@@ -93,13 +93,15 @@ int main(int argc, char* argv[]) {
 
     routing_params rpamws;
 
-    mpz_t ampz;
-    // mpz_init(a);
-    // mpz_set_str(a, "283479283784984758749387682739719875849872384798725", 10);
-    mpz_initwb_set_str(0, ampz, "283479283784984758749387682739719875849872384798725", 10);
+    // mpz_t ampz;
+    // // mpz_init(a);
+    // // mpz_set_str(a, "283479283784984758749387682739719875849872384798725", 10);
+    // mpz_initwb_set_str(0, ampz, "283479283784984758749387682739719875849872384798725", 10);
 
-    cout << WOOPB(ampz) << endl;
-    cout << WOOP(ampz) << endl;
+    
+
+    // cout << WOOPB(ampz) << endl;
+    // cout << WOOP(ampz) << endl;
 
     CROW_ROUTE(app, "/")
     ([]()
@@ -552,6 +554,9 @@ int main(int argc, char* argv[]) {
     uint16_t iPort = static_cast<uint16_t>(port != NULL? stoi(port): 18080); 
     std::cout << "PORT = " << iPort << "\n";
     std::cout << "hi" << endl;
+#if WOOPING
+    cout << "we are wooping" << endl;
+#endif
     std::cout << thread::hardware_concurrency() << endl;
 
     app.port(iPort).concurrency(thread::hardware_concurrency()).run();
