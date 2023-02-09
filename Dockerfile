@@ -2,7 +2,7 @@ FROM gcc:11.3.0
 
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
-RUN apt-get -qq updat && \ 
+RUN apt-get -qq update && \ 
     apt-get -qq upgrade && \ 
     apt-get -qq install cmake && \
     dpkg --configure -a
@@ -10,8 +10,10 @@ RUN apt-get -qq updat && \
 RUN apt-get -qq install -y libasio-dev && \ 
     apt-get -qq install -y zlib1g && \
     apt-get -qq install -y libssl-dev && \ 
+    apt-get -qq install -y vim && \
     apt-get install build-essential libtcmalloc-minimal4 && \
     ln -s /usr/lib/libtcmalloc_minimal.so.4 /usr/lib/libtcmalloc_minimal.so && \ 
+    apt-get -qq install texinfo && \ 
     cd / && \ 
     git clone https://github.com/CrowCpp/Crow.git && \
     cd Crow && \
@@ -31,17 +33,17 @@ RUN apt-get -qq install -y libasio-dev && \
 RUN git clone https://github.com/IyobedZekarias/cppAPI.git && \
     git clone https://github.com/IyobedZekarias/gmpwoop.git && \ 
     git clone https://github.com/IyobedZekarias/Crypto.git && \
-    cd Crypto && make && make install && \
-    cd gmpwoop && ./configure --enable-woop && make && make install
+    cd /Crypto && make && make install && \
+    cd /gmpwoop && ./configure --enable-woop && make && make install
 
 # INSTALL CRYPTO_IZ
 
 
 # INSTALL GMPWOOP
 
-RUN mkdir cppAPI/build && \
-    cd cppAPI/build && \
-    cmake .. && make
+# RUN mkdir cppAPI/build && \
+#     cd cppAPI/build && \
+#     cmake .. && make
 
 
 
