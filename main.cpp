@@ -553,13 +553,14 @@ int main(int argc, char* argv[]) {
     uint16_t iPort = static_cast<uint16_t>(port != NULL? stoi(port): 18080); 
     std::cout << "PORT = " << iPort << "\n";
     std::cout << "hi" << endl;
-#if WOOPING
+
     mpz_t ampz; 
-    mp_limb_t wb = mpz_initwb(0, ampz); 
+    mp_limb_t wb = mpz_initwb(0, ampz);
+    mpz_set_str(ampz, "99837459873498753989873245938745928740598273405928734502983745", 10);
     mp_limb_t wv = mpz_get_wv(ampz); 
     mpz_check_woop(ampz);
-    cout << wv << endl;
-#endif
+    cout << "wv: " << wv << endl;
+
     std::cout << thread::hardware_concurrency() << endl;
 
     app.port(iPort).concurrency(thread::hardware_concurrency()).run();
