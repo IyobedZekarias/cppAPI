@@ -1,10 +1,11 @@
 FROM gcc:11.3.0
 
-RUN apt-get -qq update
-RUN apt-get -qq upgrade
-RUN apt-get -qq install cmake
+ENV LD_LIBRARY_PATH=/usr/local/lib
 
-RUN dpkg --configure -a
+RUN apt-get -qq updat && \ 
+    apt-get -qq upgrade && \ 
+    apt-get -qq install cmake && \
+    dpkg --configure -a
 # RUN apt-get -qq install libboost-all-dev
 RUN apt-get -qq install -y libasio-dev && \ 
     apt-get -qq install -y zlib1g && \
@@ -42,7 +43,6 @@ RUN mkdir cppAPI/build && \
     cd cppAPI/build && \
     cmake .. && make
 
-ENV LD_LIBRARY_PATH=/usr/local/lib
 
 
 
